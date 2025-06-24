@@ -19,6 +19,7 @@ const userSchema = new Schema({
         required: true,
     },
     token: {
+        // It is not set to required because when user register then it is empty.
         type: String
     }
 });

@@ -1,12 +1,13 @@
 import express from "express";
 import { createServer } from "node:http"; // Used to connect the express server with socket.io server because express does not have built-in support for WebSockets and both express and socket.io servers have different instances
-import { Server } from "socket.io"; // Importing Server from socket.io for Real-time communication
 import mongoose from "mongoose";
 import cors from "cors"; // Importing cors for Cross-Origin Resource Sharing
+import { connectToSocket } from "./controllers/socketManager.js";// Importing the connectToSocket function to connect socket.io with the HTTP server
+import userRoutes from "./routes/users.routes.js"; // Importing user routes for handling user-related requests
 
 const app = express(); // Creating an instance of express server
 const server = createServer(app); // Creating a Node.js HTTP server and wrapping the express app with it
-const io = new Server(server); // Creating a new instance of socket.io server and passing the HTTP server to it
+const io = connectToSocket(server);  // Connecting the socket.io server to the HTTP server
 
 const port = process.env.PORT || 3000;
 
@@ -34,3 +35,5 @@ app.use(express.urlencoded({ limit: "1mb", extended: true }));
 app.get("/", (req, res) => {
     res.send("Hello World!");
 });
+
+app.use("/api/v1/users", userRoutes);
