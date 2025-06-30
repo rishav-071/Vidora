@@ -6,7 +6,7 @@ let connections = {},
 
 export const connectToSocket = (server) => {
     const io = new Server(server,{
-        cors: { // This is the CORS configuration is only for development not for production. Remove it in production.
+        cors: { // This CORS configuration is only for development not for production. Remove it in production.
             origin: '*', // Allowing all origins for CORS
             methods: ['GET', 'POST'], // Allowing GET and POST methods
             allowedHeaders: ['*'], // Allowing all headers
