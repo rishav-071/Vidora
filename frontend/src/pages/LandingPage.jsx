@@ -2,7 +2,6 @@ import "../index.css";
 import DarkModeToggler from "./DarkModeToggler";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import Authentication from "./Authentication";
 import AuthenticationForm from "./AuthenticationForm";
 
 export default function LandingPage() {

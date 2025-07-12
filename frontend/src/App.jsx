@@ -1,7 +1,6 @@
 import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import LandingPage from "./pages/LandingPage";
-import Authentication from "./pages/Authentication";
 
 function App() {
     const routes = createBrowserRouter([
@@ -11,7 +10,7 @@ function App() {
         },
         {
             path: "/auth",
-            element: <Authentication />,
+            element: <p>Hello!</p>,
         },
     ]);
     return (

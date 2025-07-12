@@ -25,13 +25,13 @@ export const connectToSocket = (server) => {
                     socket.id,
                     connections[path]
                 );
-            if (message[path] !== undefined) {
+            if (messages[path] !== undefined) {
                 for (let i = 0; i < message[path].length; i++)
                     io.to(socket.id).emit(
                         "message",
-                        message[path][i]["data"],
-                        message[path][i]["sender"],
-                        message[path][i]["socket-id-sender"]
+                        messages[path][i]["data"],
+                        messages[path][i]["sender"],
+                        messages[path][i]["socket-id-sender"]
                     );
             }
         });
@@ -41,7 +41,7 @@ export const connectToSocket = (server) => {
                 ([matchedPath, isFound], [currentPath, sockets]) => {
                     if (!isFound && sockets.includes(socket.id))
                         return [true, currentPath];
-                    return [matchedPath, isFound];
+                    return [isFound, matchedPath];
                 },
                 [false, null]
             );
@@ -59,7 +59,7 @@ export const connectToSocket = (server) => {
         });
 
         socket.on('disconnect',()=>{
-            Object.entries(connections).forEach((path, sockets)=>{
+            Object.entries(connections).forEach(([path, sockets])=>{
                 if(sockets.includes(socket.id)){
                     connections[path].forEach((id)=>{
                         io.to(id).emit('user-left', socket.id);

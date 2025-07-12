@@ -1,22 +1,30 @@
 import { useState } from "react";
-import {
-    Dialog,
-    DialogBackdrop,
-    DialogPanel,
-    DialogTitle,
-} from "@headlessui/react";
+import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import httpStatus from "http-status";
+import { useCookies } from "react-cookie";
+
+const client = axios.create({
+    baseURL:
+        import.meta.env.VITE_API_URL || "http://localhost:3000/api/v1/users",
+    withCredentials: true,
+});
 
 export default function AuthenticationForm({ open, setOpen, state }) {
     const initialData = {
         state: state,
-        fullName: "",
+        name: "",
         userName: "",
         password: "",
     };
     const [formData, setFormData] = useState(initialData);
+    const [error, setError] = useState("");
+    const [cookies, setCookie, removeCookie] = useCookies(["token"]);
+    const navigate = useNavigate();
 
     const resetFormData = () => {
-        setFormData((prev)=>{
+        setFormData((prev) => {
             return {
                 ...initialData,
                 state: prev.state,
@@ -34,6 +42,45 @@ export default function AuthenticationForm({ open, setOpen, state }) {
 
     const handleClose = () => {
         setOpen(false);
+    };
+
+    const handleRegister = async (e) => {
+        try {
+            e.preventDefault();
+            const res = await client.post("/register", {
+                name: formData.name,
+                userName: formData.userName,
+                password: formData.password,
+            });
+            if (res.status === httpStatus.CREATED) {
+                resetFormData();
+                setOpen(false);
+                setCookie("token", res.data.token, { httpOnly: true });
+                setError("");
+                navigate("/");
+            }
+        } catch (err) {
+            setError(err.response.data.message);
+        }
+    };
+
+    const handleLogin = async (e) => {
+        try {
+            e.preventDefault();
+
+            const res = await client.post("/login", {
+                userName: formData.userName,
+                password: formData.password,
+            });
+            if (res.status === httpStatus.OK) {
+                resetFormData();
+                setOpen(false);
+                setError("");
+                navigate("/");
+            }
+        } catch (err) {
+            setError(err.response.data.message);
+        }
     };
 
     return (
@@ -64,10 +111,10 @@ export default function AuthenticationForm({ open, setOpen, state }) {
                                         />
                                         <div className="w-full h-10 mt-4 flex items-center justify-center gap-10">
                                             <button
-                                                className={`w-24 text-white px-3 py-2 rounded-3xl ${
+                                                className={`w-24 px-3 py-2 rounded-3xl ${
                                                     !formData.state
-                                                        ? "bg-indigo-600"
-                                                        : "bg-gray-600"
+                                                        ? "bg-indigo-600 text-white"
+                                                        : "dark:bg-gray-600 dark:outline-0 outline-2 outline-indigo-600 text-black"
                                                 }`}
                                                 onClick={() => {
                                                     setFormData({
@@ -75,15 +122,16 @@ export default function AuthenticationForm({ open, setOpen, state }) {
                                                         state: false,
                                                     });
                                                     resetFormData();
+                                                    setError("");
                                                 }}
                                             >
                                                 Sign Up
                                             </button>
                                             <button
-                                                className={`w-24 text-white px-3 py-2 rounded-3xl ${
+                                                className={`w-24 px-3 py-2 rounded-3xl ${
                                                     formData.state
-                                                        ? "bg-indigo-600"
-                                                        : "bg-gray-600"
+                                                        ? "bg-indigo-600 text-white"
+                                                        : "dark:bg-gray-600 dark:outline-0 outline-2 outline-indigo-600 text-black"
                                                 }`}
                                                 onClick={() => {
                                                     setFormData({
@@ -91,6 +139,7 @@ export default function AuthenticationForm({ open, setOpen, state }) {
                                                         state: true,
                                                     });
                                                     resetFormData();
+                                                    setError("");
                                                 }}
                                             >
                                                 Sign In
@@ -184,10 +233,19 @@ export default function AuthenticationForm({ open, setOpen, state }) {
                                                 </div>
                                             </div>
 
+                                            <p className="text-red-600">
+                                                {error}
+                                            </p>
+
                                             <div>
                                                 <button
                                                     type="submit"
                                                     className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                    onClick={
+                                                        formData.state
+                                                            ? handleLogin
+                                                            : handleRegister
+                                                    }
                                                 >
                                                     {formData.state
                                                         ? "Sign In"
