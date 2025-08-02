@@ -15,7 +15,8 @@ export const connectToSocket = (server) => {
     }); // Creating a new instance of socket.io server and passing the HTTP server to it
 
     io.on("connection", (socket) => {
-        socket.on("join-call", (path) => {
+        console.log("New user connected:", socket.id);
+        socket.on("join-call", (path, userName) => {
             if (connections[path] === undefined) connections[path] = [];
             connections[path].push(socket.id);
             timeOnline[socket.id] = Date.now();
@@ -23,10 +24,11 @@ export const connectToSocket = (server) => {
                 io.to(connections[path][i]).emit(
                     "user-joined",
                     socket.id,
+                    userName,
                     connections[path]
                 );
             if (messages[path] !== undefined) {
-                for (let i = 0; i < message[path].length; i++)
+                for (let i = 0; i < messages[path].length; i++)
                     io.to(socket.id).emit(
                         "message",
                         messages[path][i]["data"],
@@ -34,6 +36,10 @@ export const connectToSocket = (server) => {
                         messages[path][i]["socket-id-sender"]
                     );
             }
+        });
+
+        socket.on("signal", (toId, message) => {
+            io.to(toId).emit("signal", socket.id, message);
         });
 
         socket.on("chat-message", (data, sender) => {

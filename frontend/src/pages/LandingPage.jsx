@@ -27,11 +27,9 @@ export default function LandingPage() {
                 </div>
             </nav>
             <div className="w-screen h-[50vh] flex justify-center items-center">
-                {/* <Link className="" to="/auth"> */}
                     <button onClick={() => setOpen(true)} className="dark:bg-[#685cfc] bg-blue-500 text-white p-1.5 rounded-lg">Get Started
                     </button>
                     <AuthenticationForm open={open} setOpen={setOpen} state={true}/>
-                {/* </Link> */}
             </div>
         </div>
     );
