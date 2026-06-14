@@ -21,7 +21,7 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'] // Allowing specific headers
 }));
 app.use(cookieParser("Secret")); // Middleware to parse cookies in requests
-app.use(express.json({ limit: "1mb" })); // Middleware to parse JSON requests with a limit of 50mb
+app.use(express.json({ limit: "1mb" })); // Middleware to parse JSON requests with a limit of 1mb
 app.use(express.urlencoded({ limit: "1mb", extended: true }));
 
 app.get("/", (req, res) => {

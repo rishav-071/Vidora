@@ -162,7 +162,7 @@ export default function VideoMeet() {
                     console.error(err);
                 }
 
-                // window.localStream = blackSilence();
+                window.localStream = blackSilence();
                 if (localVideoRef.current)
                     localVideoRef.current.srcObject = window.localStream;
 
@@ -392,7 +392,7 @@ export default function VideoMeet() {
                                 window.localStream
                             );
                         } else {
-                            // window.localStream = blackSilence();
+                            window.localStream = blackSilence();
                             addTracksToConnection(
                                 connections.current[clientSocketId],
                                 window.localStream
@@ -442,31 +442,31 @@ export default function VideoMeet() {
         });
     };
 
-    // let blackSilence = (...args) => new MediaStream([blackScreen(...args), silence()]);
+    let blackSilence = (...args) => new MediaStream([blackScreen(...args), silence()]);
 
-    // let silence = () => {
-    //     let audioContext = new AudioContext();
-    //     let oscillator = audioContext.createOscillator();
-    //     let destination = audioContext.createMediaStreamDestination();
-    //     oscillator.connect(destination);
-    //     oscillator.start();
-    //     audioContext.resume();
-    //     return Object.assign(destination.stream.getAudioTracks()[0], {
-    //         enabled: false,
-    //     });
-    // };
+    let silence = () => {
+        let audioContext = new AudioContext();
+        let oscillator = audioContext.createOscillator();
+        let destination = audioContext.createMediaStreamDestination();
+        oscillator.connect(destination);
+        oscillator.start();
+        audioContext.resume();
+        return Object.assign(destination.stream.getAudioTracks()[0], {
+            enabled: false,
+        });
+    };
 
-    // let blackScreen = ({ width = 640, height = 480 } = {}) => {
-    //     let canvas = Object.assign(document.createElement("canvas"), {
-    //         width,
-    //         height,
-    //     });
-    //     canvas.getContext("2d").fillRect(0, 0, width, height);
-    //     let stream = canvas.captureStream();
-    //     return Object.assign(stream.getVideoTracks()[0], {
-    //         enabled: false,
-    //     });
-    // };
+    let blackScreen = ({ width = 640, height = 480 } = {}) => {
+        let canvas = Object.assign(document.createElement("canvas"), {
+            width,
+            height,
+        });
+        canvas.getContext("2d").fillRect(0, 0, width, height);
+        let stream = canvas.captureStream();
+        return Object.assign(stream.getVideoTracks()[0], {
+            enabled: false,
+        });
+    };
 
     const getUserMedia = async () => {
         if ((video && videoPermission) || (audio && audioPermission)) {
@@ -490,7 +490,7 @@ export default function VideoMeet() {
                 if (localVideoRef.current && localVideoRef.current.srcObject) {
                     const tracks = localVideoRef.current.srcObject.getTracks();
                     tracks.forEach((track) => track.stop());
-                    // localVideoRef.current.srcObject = blackSilence();
+                    localVideoRef.current.srcObject = blackSilence();
                 }
             } catch (err) {
                 console.error(err);
@@ -529,11 +529,11 @@ export default function VideoMeet() {
                         value={userName}
                         onChange={(e) => setUserName(e.target.value)}
                         className="border p-2 rounded w-50 mb-4"
-                    />
+                        />
                     <button
                         onClick={connect}
                         className="bg-blue-500 text-white px-4 py-2 rounded"
-                    >
+                        >
                         Join
                     </button>
                     <video
@@ -541,6 +541,7 @@ export default function VideoMeet() {
                         autoPlay
                         muted
                         playsInline
+                        style={{ transform: "scaleX(-1)" }}
                     ></video>
                 </div>
             ) : (
